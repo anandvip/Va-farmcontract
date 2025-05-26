@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haryana Farm Management Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .plot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .plot {
+            background: linear-gradient(135deg, #a8e6cf, #88cc88);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plot:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .plot.selected {
+            background: linear-gradient(135deg, #ffd93d, #ff6b6b);
+            transform: scale(1.05);
+        }
+
+        .plot-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2d5016;
+        }
+
+        .plot-details {
+            font-size: 0.9em;
+            color: #4a6741;
+            line-height: 1.4;
+        }
+
+        .advisory-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            min-height: 300px;
+        }
+
+        .ai-response {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .fpo-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+
+        .fpo-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .fpo-item:hover {
+            background: #e3f2fd;
+            transform: translateX(5px);
+        }
+
+        .fpo-name {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .fpo-details {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e0e0e0;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌾 हरियाणा Farm Manager</h1>
+            <p>AI-Powered Fragmented Land Management System</p>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalPlots">12</div>
+                    <div class="stat-label">Total Plots</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalArea">147</div>
+                    <div class="stat-label">Acres</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="activeFPOs">28</div>
+                    <div class="stat-label">Partner FPOs</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <div class="card">
+                <h3><span class="icon">🗺️</span>Plot Management</h3>
+                <div class="plot-grid" id="plotGrid">
+                    <!-- Plots will be dynamically generated -->
+                </div>
+                <button class="btn" onclick="addNewPlot()">+ Add Plot</button>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">🤖</span>AI Advisor</h3>
+                <div class="input-group">
+                    <label>Select Plot for Analysis</label>
+                    <select id="plotSelector">
+                        <option value="">Choose a plot...</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Query Type</label>
+                    <select id="queryType">
+                        <option value="soil">Soil Analysis</option>
+                        <option value="irrigation">Irrigation Plan</option>
+                        <option value="cost">Cost Optimization</option>
+                        <option value="crop">Crop Recommendation</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="getAIAdvice()">Get AI Advice</button>
+                <div id="aiResponse"></div>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <div class="card">
+                <h3><span class="icon">💰</span>Cost Tracker</h3>
+                <div class="input-group">
+                    <label>Expense Type</label>
+                    <select id="expenseType">
+                        <option value="fuel">Diesel/Fuel</option>
+                        <option value="fertilizer">Fertilizers</option>
+                        <option value="seeds">Seeds</option>
+                        <option value="labor">Labor</option>
+                        <option value="pesticide">Pesticides</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Amount (₹)</label>
+                    <input type="number" id="expenseAmount" placeholder="Enter amount">
+                </div>
+                <div class="input-group">
+                    <label>Plot</label>
+                    <select id="expensePlot">
+                        <option value="">Select plot...</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="addExpense()">Add Expense</button>
+                <div id="expenseList"></div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">🏢</span>Partner FPOs</h3>
+                <div class="input-group">
+                    <label>Filter by District</label>
+                    <select id="districtFilter" onchange="filterFPOs()">
+                        <option value="">All Districts</option>
+                        <option value="Palwal">Palwal</option>
+                        <option value="Kurukshetra">Kurukshetra</option>
+                        <option value="Karnal">Karnal</option>
+                        <option value="Gurgaon">Gurgaon</option>
+                        <option value="Hisar">Hisar</option>
+                    </select>
+                </div>
+                <div class="fpo-list" id="fpoList">
+                    <!-- FPOs will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="advisory-panel">
+            <h3><span class="icon">📊</span>Smart Analytics Dashboard</h3>
+            <div id="analyticsContent">
+                <p>Welcome to the Haryana Farm Management System! This platform helps manage fragmented landholdings with AI-powered insights.</p>
+                <div class="ai-response">
+                    <strong>💡 Today's Recommendation:</strong><br>
+                    मौसम के अनुसार Plot 3 में सरसों की बुवाई के लिए यूरिया की मात्रा 15% कम करें। मिट्टी का pH 8.2 है जो क्षारीय है।
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data structure
+        let farmData = {
+            plots: [
+                {
+                    id: 1,
+                    name: "Plot A1",
+                    area: 12,
+                    soilType: "Alluvial",
+                    pH: 7.8,
+                    crop: "Wheat",
+                    waterSource: "Tubewell",
+                    location: "Village Gharrot, Palwal"
+                },
+                {
+                    id: 2,
+                    name: "Plot A2",
+                    area: 8,
+                    soilType: "Sandy",
+                    pH: 8.2,
+                    crop: "Mustard",
+                    waterSource: "Canal",
+                    location: "Village Maholi, Palwal"
+                },
+                {
+                    id: 3,
+                    name: "Plot B1",
+                    area: 14,
+                    soilType: "Clay",
+                    pH: 7.5,
+                    crop: "Rice",
+                    waterSource: "Tubewell",
+                    location: "Beholi, Kurukshetra"
+                }
+            ],
+            expenses: [],
+            fpos: [
+                {
+                    name: "GHAROT FARMER PRODUCER COMPANY LIMITED",
+                    district: "Palwal",
+                    products: "Cotton, Bajra",
+                    email: "gharotfpc@gmail.com",
+                    location: "Village Gharrot, Hathin, Palwal"
+                },
+                {
+                    name: "BEHOLI FARMER PRODUCER COMPANY LIMITED",
+                    district: "Kurukshetra", 
+                    products: "Cereals and other crops",
+                    email: "beholifpc@gmail.com",
+                    location: "Beholi, Pipli, Kurukshetra"
+                },
+                {
+                    name: "KARNAL VEGETABLE PRODUCER COMPANY",
+                    district: "Karnal",
+                    products: "Vegetables",
+                    email: "",
+                    location: "Shop No. 271, First Floor, New Grain Market"
+                }
+            ]
+        };
+
+        let selectedPlot = null;
+
+        // Initialize the application
+        function initApp() {
+            renderPlots();
+            renderFPOs();
+            updateSelectors();
+            renderExpenses();
+        }
+
+        // Render plots
+        function renderPlots() {
+            const plotGrid = document.getElementById('plotGrid');
+            plotGrid.innerHTML = '';
+            
+            farmData.plots.forEach(plot => {
+                const plotDiv = document.createElement('div');
+                plotDiv.className = 'plot';
+                plotDiv.onclick = () => selectPlot(plot.id);
+                
+                plotDiv.innerHTML = `
+                    <div class="plot-title">${plot.name}</div>
+                    <div class="plot-details">
+                        ${plot.area} acres<br>
+                        ${plot.soilType} soil<br>
+                        pH: ${plot.pH}<br>
+                        ${plot.crop}
+                    </div>
+                `;
+                
+                if (selectedPlot === plot.id) {
+                    plotDiv.classList.add('selected');
+                }
+                
+                plotGrid.appendChild(plotDiv);
+            });
+        }
+
+        // Select a plot
+        function selectPlot(plotId) {
+            selectedPlot = plotId;
+            renderPlots();
+            
+            const plot = farmData.plots.find(p => p.id === plotId);
+            if (plot) {
+                document.getElementById('analyticsContent').innerHTML = `
+                    <h4>Selected Plot: ${plot.name}</h4>
+                    <p><strong>Area:</strong> ${plot.area} acres</p>
+                    <p><strong>Soil Type:</strong> ${plot.soilType}</p>
+                    <p><strong>pH Level:</strong> ${plot.pH}</p>
+                    <p><strong>Current Crop:</strong> ${plot.crop}</p>
+                    <p><strong>Water Source:</strong> ${plot.waterSource}</p>
+                    <p><strong>Location:</strong> ${plot.location}</p>
+                    
+                    <div class="ai-response">
+                        <strong>🎯 AI Insight:</strong><br>
+                        ${getPlotInsight(plot)}
+                    </div>
+                `;
+            }
+        }
+
+        // Get AI insight for plot
+        function getPlotInsight(plot) {
+            if (plot.pH > 8) {
+                return `मिट्टी क्षारीय है (pH ${plot.pH})। जिप्सम का उपयोग करें और यूरिया की मात्रा 20% कम करें।`;
+            } else if (plot.pH < 7) {
+                return `मिट्टी अम्लीय है (pH ${plot.pH})। चूना मिलाने की सलाह दी जाती है।`;
+            } else {
+                return `मिट्टी संतुलित है (pH ${plot.pH})। वर्तमान फसल ${plot.crop} के लिए उपयुक्त है।`;
+            }
+        }
+
+        // Get AI advice
+        function getAIAdvice() {
+            const plotId = document.getElementById('plotSelector').value;
+            const queryType = document.getElementById('queryType').value;
+            
+            if (!plotId) {
+                alert('Please select a plot first');
+                return;
+            }
+            
+            const responseDiv = document.getElementById('aiResponse');
+            responseDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Generating AI advice...</div>';
+            
+            setTimeout(() => {
+                const plot = farmData.plots.find(p => p.id == plotId);
+                let advice = generateAIAdvice(plot, queryType);
+                
+                responseDiv.innerHTML = `
+                    <div class="ai-response">
+                        <strong>🤖 AI Recommendation for ${plot.name}:</strong><br>
+                        ${advice}
+                    </div>
+                `;
+            }, 2000);
+        }
+
+        // Generate AI advice based on query type
+        function generateAIAdvice(plot, queryType) {
+            const advice = {
+                soil: `मिट्टी विश्लेषण: ${plot.soilType} मिट्टी, pH ${plot.pH}। NPK अनुपात 4:2:1 रखें। ${plot.pH > 8 ? 'जिप्सम 2 बोरी प्रति एकड़ डालें।' : 'वर्तमान pH संतुलित है।'}`,
+                irrigation: `सिंचाई योजना: ${plot.waterSource} से सप्ताह में 2 बार सिंचाई करें। ${plot.crop} के लिए ${plot.area * 1200} लीटर पानी की आवश्यकता।`,
+                cost: `लागत अनुकूलन: इस प्लॉट में ₹${plot.area * 4500}/एकड़ अनुमानित लागत। समूहिक खरीदारी से 15% बचत संभव।`,
+                crop: `फसल सुझाव: ${plot.soilType} मिट्टी में ${plot.pH > 8 ? 'बाजरा या ज्वार' : 'गेहूं या धान'} उगाना बेहतर होगा।`
+            };
+            
+            return advice[queryType] || 'सामान्य सलाह: नियमित मिट्टी जांच कराएं और जैविक खाद का प्रयोग करें।';
+        }
+
+        // Add new plot
+        function addNewPlot() {
+            const name = prompt('Enter plot name:');
+            const area = parseFloat(prompt('Enter area in acres:'));
+            
+            if (name && area) {
+                const newPlot = {
+                    id: farmData.plots.length + 1,
+                    name: name,
+                    area: area,
+                    soilType: 'Unknown',
+                    pH: 7.0,
+                    crop: 'Not set',
+                    waterSource: 'To be determined',
+                    location: 'To be determined'
+                };
+                
+                farmData.plots.push(newPlot);
+                renderPlots();
+                updateSelectors();
+                
+                // Update total area
+                const totalArea = farmData.plots.reduce((sum, plot) => sum + plot.area, 0);
+                document.getElementById('totalArea').textContent = totalArea;
+                document.getElementById('totalPlots').textContent = farmData.plots.length;
+            }
+        }
+
+        // Update selectors
+        function updateSelectors() {
+            const plotSelector = document.getElementById('plotSelector');
+            const expensePlot = document.getElementById('expensePlot');
+            
+            plotSelector.innerHTML = '<option value="">Choose a plot...</option>';
+            expensePlot.innerHTML = '<option value="">Select plot...</option>';
+            
+            farmData.plots.forEach(plot => {
+                const option1 = new Option(`${plot.name} (${plot.area} acres)`, plot.id);
+                const 
