@@ -135,6 +135,25 @@
             line-height: 1.4;
         }
 
+        .plot-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .btn-sm {
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .btn-sm.edit { background: #3498db; }
+        .btn-sm.delete { background: #e74c3c; }
+
         .advisory-panel {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -466,6 +485,10 @@
                         pH: ${plot.pH}<br>
                         ${plot.crop}
                     </div>
+                    <div class="plot-actions">
+                        <button class="btn-sm edit" onclick="editPlot(${plot.id});event.stopPropagation()">Edit</button>
+                        <button class="btn-sm delete" onclick="deletePlot(${plot.id});event.stopPropagation()">Delete</button>
+                    </div>
                 `;
                 
                 if (selectedPlot === plot.id) {
@@ -553,8 +576,8 @@
         function addNewPlot() {
             const name = prompt('Enter plot name:');
             const area = parseFloat(prompt('Enter area in acres:'));
-            
-            if (name && area) {
+
+            if (name && !isNaN(area) && area > 0) {
                 const newPlot = {
                     id: farmData.plots.length + 1,
                     name: name,
@@ -577,6 +600,35 @@
             }
         }
 
+        function editPlot(id) {
+            const plot = farmData.plots.find(p => p.id === id);
+            if (!plot) return;
+            const name = prompt('Edit plot name:', plot.name);
+            const area = parseFloat(prompt('Edit area in acres:', plot.area));
+            if (name && !isNaN(area) && area > 0) {
+                plot.name = name;
+                plot.area = area;
+                renderPlots();
+                updateSelectors();
+                const totalArea = farmData.plots.reduce((sum, p) => sum + p.area, 0);
+                document.getElementById('totalArea').textContent = totalArea;
+            }
+        }
+
+        function deletePlot(id) {
+            if (!confirm('Delete this plot?')) return;
+            farmData.plots = farmData.plots.filter(p => p.id !== id);
+            if (selectedPlot === id) selectedPlot = null;
+            renderPlots();
+            updateSelectors();
+            const totalArea = farmData.plots.reduce((sum, p) => sum + p.area, 0);
+            document.getElementById('totalArea').textContent = totalArea;
+            document.getElementById('totalPlots').textContent = farmData.plots.length;
+        }
+        window.addNewPlot = addNewPlot;
+        window.editPlot = editPlot;
+        window.deletePlot = deletePlot;
+
         // Update selectors
         function updateSelectors() {
             const plotSelector = document.getElementById('plotSelector');
@@ -586,5 +638,63 @@
             expensePlot.innerHTML = '<option value="">Select plot...</option>';
             
             farmData.plots.forEach(plot => {
-                const option1 = new Option(`${plot.name} (${plot.area} acres)`, plot.id);
-                const 
+                const opt = new Option(`${plot.name} (${plot.area} acres)`, plot.id);
+                plotSelector.add(opt.cloneNode(true));
+                expensePlot.add(opt);
+            });
+        }
+
+        // Add an expense entry
+        function addExpense() {
+            const type = document.getElementById('expenseType').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const plotId = parseInt(document.getElementById('expensePlot').value);
+
+            if (!amount || !plotId) {
+                alert('Please select a plot and enter a valid amount');
+                return;
+            }
+
+            const expense = { id: farmData.expenses.length + 1, plotId, type, amount };
+            farmData.expenses.push(expense);
+            renderExpenses();
+        }
+
+        // Render expense list
+        function renderExpenses() {
+            const list = document.getElementById('expenseList');
+            list.innerHTML = '';
+
+            farmData.expenses.forEach(exp => {
+                const plot = farmData.plots.find(p => p.id === exp.plotId);
+                const item = document.createElement('div');
+                item.className = 'fpo-item';
+                item.textContent = `${plot.name}: ₹${exp.amount} for ${exp.type}`;
+                list.appendChild(item);
+            });
+        }
+
+        // Render FPO list
+        function renderFPOs(data = farmData.fpos) {
+            const list = document.getElementById('fpoList');
+            list.innerHTML = '';
+
+            data.forEach(fpo => {
+                const item = document.createElement('div');
+                item.className = 'fpo-item';
+                item.innerHTML = `<div class="fpo-name">${fpo.name}</div><div class="fpo-details">${fpo.location}</div>`;
+                list.appendChild(item);
+            });
+        }
+
+        // Filter FPOs by district
+        function filterFPOs() {
+            const district = document.getElementById('districtFilter').value;
+            const filtered = district ? farmData.fpos.filter(f => f.district === district) : farmData.fpos;
+            renderFPOs(filtered);
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
