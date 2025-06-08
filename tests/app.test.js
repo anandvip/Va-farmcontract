@@ -7,7 +7,7 @@ describe('initApp', () => {
 
   beforeAll(() => {
     const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
-    dom = new JSDOM(html, { runScripts: 'dangerously' });
+    dom = new JSDOM(html, { runScripts: 'dangerously', url: 'http://localhost' });
     dom.window.initApp();
   });
 

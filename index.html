@@ -440,8 +440,24 @@
 
         let selectedPlot = null;
 
+        function loadExpenses() {
+            const stored = localStorage.getItem('expenses');
+            if (stored) {
+                try {
+                    farmData.expenses = JSON.parse(stored);
+                } catch (e) {
+                    console.error('Failed to parse expenses from storage', e);
+                }
+            }
+        }
+
+        function saveExpenses() {
+            localStorage.setItem('expenses', JSON.stringify(farmData.expenses));
+        }
+
         // Initialize the application
         function initApp() {
+            loadExpenses();
             renderPlots();
             renderFPOs();
             updateSelectors();
@@ -610,6 +626,7 @@
 
             const expense = { id: farmData.expenses.length + 1, plotId, type, amount };
             farmData.expenses.push(expense);
+            saveExpenses();
             renderExpenses();
         }
 
