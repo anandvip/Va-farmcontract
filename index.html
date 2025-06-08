@@ -587,4 +587,62 @@
             
             farmData.plots.forEach(plot => {
                 const option1 = new Option(`${plot.name} (${plot.area} acres)`, plot.id);
-                const 
+                plotSelector.add(new Option(option1.text, option1.value));
+                expensePlot.add(new Option(option1.text, option1.value));
+            });
+        }
+
+        // Add an expense entry
+        function addExpense() {
+            const type = document.getElementById('expenseType').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const plotId = parseInt(document.getElementById('expensePlot').value);
+
+            if (!amount || !plotId) {
+                alert('Please select a plot and enter a valid amount');
+                return;
+            }
+
+            const expense = { id: farmData.expenses.length + 1, plotId, type, amount };
+            farmData.expenses.push(expense);
+            renderExpenses();
+        }
+
+        // Render expense list
+        function renderExpenses() {
+            const list = document.getElementById('expenseList');
+            list.innerHTML = '';
+
+            farmData.expenses.forEach(exp => {
+                const plot = farmData.plots.find(p => p.id === exp.plotId);
+                const item = document.createElement('div');
+                item.className = 'fpo-item';
+                item.textContent = `${plot.name}: ₹${exp.amount} for ${exp.type}`;
+                list.appendChild(item);
+            });
+        }
+
+        // Render FPO list
+        function renderFPOs(data = farmData.fpos) {
+            const list = document.getElementById('fpoList');
+            list.innerHTML = '';
+
+            data.forEach(fpo => {
+                const item = document.createElement('div');
+                item.className = 'fpo-item';
+                item.innerHTML = `<div class="fpo-name">${fpo.name}</div><div class="fpo-details">${fpo.location}</div>`;
+                list.appendChild(item);
+            });
+        }
+
+        // Filter FPOs by district
+        function filterFPOs() {
+            const district = document.getElementById('districtFilter').value;
+            const filtered = district ? farmData.fpos.filter(f => f.district === district) : farmData.fpos;
+            renderFPOs(filtered);
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
