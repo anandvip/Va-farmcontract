@@ -633,15 +633,26 @@
         function updateSelectors() {
             const plotSelector = document.getElementById('plotSelector');
             const expensePlot = document.getElementById('expensePlot');
-            
+
+            // Preserve current selections
+            const prevPlot = plotSelector.value;
+            const prevExpense = expensePlot.value;
+
             plotSelector.innerHTML = '<option value="">Choose a plot...</option>';
             expensePlot.innerHTML = '<option value="">Select plot...</option>';
-            
+
             farmData.plots.forEach(plot => {
                 const opt = new Option(`${plot.name} (${plot.area} acres)`, plot.id);
                 plotSelector.add(opt.cloneNode(true));
                 expensePlot.add(opt);
             });
+
+            if (plotSelector.querySelector(`option[value="${prevPlot}"]`)) {
+                plotSelector.value = prevPlot;
+            }
+            if (expensePlot.querySelector(`option[value="${prevExpense}"]`)) {
+                expensePlot.value = prevExpense;
+            }
         }
 
         // Add an expense entry
