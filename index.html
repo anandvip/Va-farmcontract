@@ -446,6 +446,11 @@
             renderFPOs();
             updateSelectors();
             renderExpenses();
+
+            const totalArea = farmData.plots.reduce((sum, plot) => sum + plot.area, 0);
+            document.getElementById('totalArea').textContent = totalArea;
+            document.getElementById('totalPlots').textContent = farmData.plots.length;
+            document.getElementById('activeFPOs').textContent = farmData.fpos.length;
         }
 
         // Render plots
