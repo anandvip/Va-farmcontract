@@ -576,6 +576,7 @@
                 document.getElementById('totalPlots').textContent = farmData.plots.length;
             }
         }
+        window.addNewPlot = addNewPlot;
 
         // Update selectors
         function updateSelectors() {
@@ -586,9 +587,9 @@
             expensePlot.innerHTML = '<option value="">Select plot...</option>';
             
             farmData.plots.forEach(plot => {
-                const option1 = new Option(`${plot.name} (${plot.area} acres)`, plot.id);
-                plotSelector.add(new Option(option1.text, option1.value));
-                expensePlot.add(new Option(option1.text, option1.value));
+                const opt = new Option(`${plot.name} (${plot.area} acres)`, plot.id);
+                plotSelector.add(opt.cloneNode(true));
+                expensePlot.add(opt);
             });
         }
 
